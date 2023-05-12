@@ -22,7 +22,7 @@ export class UserController {
 
     async createUser(req: Request, res: Response) {
         await userService.createUser(req.body)
-        return res.status(200).json("Usuário cadastrado com sucesso!")
+        return res.status(201).json("Usuário cadastrado com sucesso!")
     }
 
     async updateUserEmail(req: Request, res: Response) {

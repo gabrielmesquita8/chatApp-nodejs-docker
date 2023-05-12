@@ -8,9 +8,9 @@ export class UserRepository {
 
     constructor() {
         this.db = connect();
-        this.db.sequelize.sync({ force: true }).then(() => {
-            console.log("Drop and re-sync db.");
-        });
+        // this.db.sequelize.sync({ force: true }).then(() => {
+        //     console.log("Drop and re-sync db.");
+        // });
         this.userRepository = this.db.sequelize.getRepository(User);
     }
 
@@ -53,6 +53,13 @@ export class UserRepository {
                 email: email 
             }
         });
+    }
+    
+    async cleanTable() {
+        return await this.userRepository.destroy({
+            where: {},
+            truncate: true
+        })
     }
 
     async validateUserAlreadyExist(email: String) {

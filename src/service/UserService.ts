@@ -61,9 +61,14 @@ export class UserService {
           throw new BadRequestError('O Email informado já está cadastrado.')
         }
 
-        const validateFields = await this.hasEmptyFields(userData)
-        if (validateFields === true) {
+        const verifyFields = await this.hasEmptyFields(userData)
+        if (verifyFields === true) {
           throw new BadRequestError('Verifique se os campos estão preenchidos corretamente.')
+        }
+        
+        const verifyTexts = await this.verifyIfTextIsValid(userData)
+        if(verifyTexts === false) {
+          throw new BadRequestError('Verifique se os dados inseridos estão em um formato válido.')
         }
         
         const hashPassword = await bcryptjs.hash(password, 10)
@@ -107,6 +112,23 @@ export class UserService {
         return await userRepository.deleteAccount(email)
     }
 
+    async verifyIfTextIsValid(user: User) {
+      const {firstname, lastname} = user
+
+      const firstNameValidation = await this.regexText(firstname)
+      const lastNameValidation = await this.regexText(lastname)
+
+      if(firstNameValidation === false || lastNameValidation === false) {
+        return false
+      } else {
+        return true
+      }
+    }
+
+    async regexText(field: string) {
+      return  /^[a-zA-Z\s]+$/.test(field);
+    }
+    
     async hasEmptyFields<T>(obj: T): Promise<boolean> {
         for (let key in obj) {
           if (typeof obj[key] === "object") {
@@ -119,6 +141,6 @@ export class UserService {
             }
           }
         }
-        return false;
+      return false;
     }
 }
